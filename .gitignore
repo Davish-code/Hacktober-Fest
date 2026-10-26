@@ -1,0 +1,87 @@
+# ==============================================================================
+# TrustFlow Repository .gitignore
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Secrets & Environment Configurations (Never commit real credentials)
+# ------------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+.env.*
+!.env.example
+
+# Service account & API key files
+*.pem
+*.key
+*credentials*.json
+service_account*.json
+client_secret*.json
+
+# ------------------------------------------------------------------------------
+# Dynamic Workspace Sandbox Data & Execution Session Runs
+# ------------------------------------------------------------------------------
+backend/workspace/
+backend/workspace_runs/
+workspace/
+workspace_runs/
+runs/
+draft_emails.json
+engine_test.txt
+ledger.json
+
+# ------------------------------------------------------------------------------
+# Logs & Process Outputs
+# ------------------------------------------------------------------------------
+*.log
+logs/
+*.pid
+
+# ------------------------------------------------------------------------------
+# Byte-compiled / Optimized / Python Artifacts
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ------------------------------------------------------------------------------
+# Virtual Environments
+# ------------------------------------------------------------------------------
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# ------------------------------------------------------------------------------
+# Testing & Coverage Caches
+# ------------------------------------------------------------------------------
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.cache
+
+# ------------------------------------------------------------------------------
+# IDE, Editor, Agent & OS Artifacts
+# ------------------------------------------------------------------------------
+.vscode/
+.idea/
+.agents/
+.gemini/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+*.tmp

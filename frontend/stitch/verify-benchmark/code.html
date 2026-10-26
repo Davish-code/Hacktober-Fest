@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"tertiary":"#615e55","on-secondary-fixed":"#1a1c20","on-secondary":"#ffffff","inverse-on-surface":"#f3f0e9","outline":"#8f7067","on-background":"#1c1c18","on-tertiary-fixed":"#1d1c15","secondary-fixed":"#e2e2e8","background":"#fcf9f2","on-surface-variant":"#5b4038","surface-container-high":"#ebe8e1","on-secondary-fixed-variant":"#45474b","secondary-container":"#e2e2e8","surface-container-lowest":"#ffffff","secondary":"#5d5e63","surface-container-highest":"#e5e2db","surface-container-low":"#f6f3ec","error-container":"#ffdad6","primary-fixed-dim":"#ffb59e","on-tertiary-container":"#2d2b24","surface-dim":"#dcdad3","surface-container":"#f1eee7","on-primary-fixed-variant":"#852400","surface-variant":"#e5e2db","on-error-container":"#93000a","on-tertiary":"#ffffff","primary-container":"#ff5a1f","outline-variant":"#e4beb3","secondary-fixed-dim":"#c6c6cc","error":"#ba1a1a","tertiary-container":"#969288","surface-tint":"#ae3200","on-primary-fixed":"#3a0b00","on-primary":"#ffffff","primary-fixed":"#ffdbd0","inverse-surface":"#31312c","tertiary-fixed":"#e7e2d7","on-error":"#ffffff","primary":"#ae3200","inverse-primary":"#ffb59e","surface":"#fcf9f2","surface-bright":"#fcf9f2","on-tertiary-fixed-variant":"#49473f","tertiary-fixed-dim":"#cbc6bb","on-primary-container":"#541400","on-secondary-container":"#636469","on-surface":"#1c1c18"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"margin":"1rem","space-lg":"1rem","margin-md":"1.5rem","space-md":"0.75rem","space-xs":"0.25rem","gutter-lg":"1.5rem","space-xl":"1.5rem","space-sm":"0.5rem","gutter":"1rem","margin-lg":"2rem","space-2xl":"2rem"},"fontFamily":{"body-lg":["Space Grotesk"],"headline-sm":["Space Grotesk"],"headline-md":["Space Grotesk"],"label-md":["JetBrains Mono"],"body-md":["Space Grotesk"],"headline-xl-mobile":["Space Grotesk"],"label-sm":["JetBrains Mono"],"label-lg":["JetBrains Mono"],"body-sm":["Space Grotesk"],"headline-lg-mobile":["Space Grotesk"],"code-body":["JetBrains Mono"],"headline-xl":["Space Grotesk"],"headline-lg":["Space Grotesk"]},"fontSize":{"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-sm":["16px",{"lineHeight":"22px","letterSpacing":"0em","fontWeight":"600"}],"headline-md":["20px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["11px",{"lineHeight":"16px","letterSpacing":"0.06em","fontWeight":"500"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-xl-mobile":["28px",{"lineHeight":"34px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.08em","fontWeight":"500"}],"label-lg":["13px",{"lineHeight":"18px","letterSpacing":"0.04em","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-lg-mobile":["22px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"code-body":["12px",{"lineHeight":"18px","fontWeight":"400"}],"headline-xl":["38px",{"lineHeight":"44px","letterSpacing":"-0.03em","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"600"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface-container-low border-b border-surface-container-highest"><div class="w-full h-16 px-space-md flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg shrink-0"><div class="flex items-center gap-space-sm"><svg class="w-6 h-6 text-primary shrink-0" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" viewbox="0 0 24 24"><polygon fill="none" points="12 2 20 6 20 12 12 21 4 12 4 6 12 2" stroke="currentColor"></polygon><path d="m9 12 2 2 4-4" stroke="currentColor"></path></svg><div class="flex flex-col"><span class="font-headline-sm text-headline-sm uppercase tracking-tight text-on-surface leading-none">TrustFlow</span><span class="font-label-sm text-label-sm text-tertiary mt-0.5 tracking-wider">SYS.VER: 4.8.2 // SECURE_EXEC</span></div></div><div class="h-6 w-px bg-surface-container-highest hidden lg:block"></div><span class="font-label-sm text-label-sm text-tertiary hidden xl:inline-block tracking-wide">LLMs propose. Code disposes.</span></div><div class="hidden md:flex items-center gap-space-md shrink-0"><div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container-high border border-surface-container-highest rounded-DEFAULT"><span class="w-2 h-2 rounded-none bg-primary shrink-0 animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface font-semibold">MODE: LIVE / BENCHMARK</span></div><div class="px-space-sm py-1 bg-surface-container border border-surface-container-highest rounded-DEFAULT"><span class="font-label-sm text-label-sm text-tertiary">T-RESOLVE: </span><span class="font-label-sm text-label-sm text-on-surface font-semibold">412ms</span></div><span class="font-label-sm text-label-sm text-tertiary italic cursor-pointer hover:text-on-surface">Simulated data only</span></div><div class="flex items-center gap-space-md shrink-0"><div class="hidden sm:flex items-center gap-1.5 px-space-sm py-1 bg-surface-container-high border border-surface-container-highest rounded-DEFAULT"><span class="w-1.5 h-1.5 rounded-none bg-tertiary shrink-0"></span><span class="font-label-sm text-label-sm text-on-surface font-semibold">ALL RUNTIMES ONLINE</span></div><div class="hidden lg:block font-label-sm text-label-sm px-space-sm py-1 bg-surface-container border border-surface-container-highest rounded-DEFAULT text-on-surface font-medium">[PROJECT: ACCOUNTS_RECV_OPS]</div><div class="flex items-center gap-space-sm pl-space-sm border-l border-surface-container-highest"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-none bg-primary"></span><span class="font-label-sm text-label-sm text-on-surface font-bold">OP-904</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><aside class="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-surface-container-low border-r border-surface-container-highest z-40 flex flex-col justify-between"><div class="flex flex-col"><div class="px-space-md py-space-sm border-b border-surface-container-highest flex items-center justify-between"><span class="font-label-sm text-label-sm text-tertiary tracking-wider uppercase">CHECKLIST_DECK // S-01</span><span class="font-label-sm text-label-sm text-tertiary">+</span></div><nav class="flex flex-col p-space-sm gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold border-primary"><a class="flex items-center justify-between px-space-sm py-2 rounded-DEFAULT border border-transparent text-on-surface hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="live-dispatch-console" href="#"><span class="font-label-md text-label-md">01 // DISPATCH CONSOLE</span><span class="font-label-sm text-label-sm text-tertiary">[ACT]</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-DEFAULT border border-transparent text-on-surface hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="deterministic-verifiers" href="#"><span class="font-label-md text-label-md">02 // VERIFIERS &amp; GATES</span><span class="font-label-sm text-label-sm text-tertiary">[MUT]</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-DEFAULT border border-transparent text-on-surface hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="state-diff-observability" href="#"><span class="font-label-md text-label-md">03 // STATE DIFF OBSERVER</span><span class="font-label-sm text-label-sm text-tertiary">[RO]</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-DEFAULT border border-transparent text-on-surface hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="audit-telemetry-ledger" href="#"><span class="font-label-md text-label-md">04 // AUDIT &amp; TELEMETRY</span><span class="font-label-sm text-label-sm text-tertiary">[RO]</span></a><a aria-current="page" class="flex items-center justify-between px-space-sm py-2 rounded-DEFAULT transition-colors bg-primary-container text-on-primary font-semibold border-primary" data-path="audit-benchmarks" href="#"><span class="font-label-md text-label-md">04 // AUDIT &amp; BENCHMARKS</span><span class="font-label-sm text-label-sm text-tertiary">[EVAL]</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-DEFAULT border border-transparent text-on-surface hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="runtime-system-config" href="#"><span class="font-label-md text-label-md">05 // RUNTIME CONFIG</span><span class="font-label-sm text-label-sm text-tertiary">[SBX]</span></a></nav></div><div class="p-space-md border-t border-surface-container-highest"><div class="flex items-center justify-between text-tertiary font-label-sm text-label-sm"><span class="uppercase">DRAUGHT GRID: 8PX</span><span>AX-904</span></div></div></aside><div class="pl-64"><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Coordinate Background & Main Matrix Canvas -->
+<div class="relative w-full p-space-md lg:p-space-xl flex flex-col gap-space-lg text-on-surface">
+<!-- Top Coordinate Bar & Audit Metadata Strip -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm bg-surface-container-low p-space-md rounded-DEFAULT border border-surface-container-highest">
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center gap-1.5 px-space-sm py-0.5 bg-surface-container-high rounded-DEFAULT text-on-surface">
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+<span class="font-label-sm text-label-sm font-semibold tracking-wider">BENCHMARK_SUITE // N=1,200_SYNTHETIC_RUNS</span>
+</div>
+<div class="px-space-sm py-0.5 bg-surface-container rounded-DEFAULT text-tertiary">
+<span class="font-label-sm text-label-sm text-on-surface">EVAL_REVISION:</span> <span class="font-label-sm text-label-sm font-semibold text-on-surface">v4.8.2-PROD</span>
+</div>
+<div class="px-space-sm py-0.5 bg-surface-container rounded-DEFAULT text-tertiary">
+<span class="font-label-sm text-label-sm text-on-surface">TESTSET:</span> <span class="font-label-sm text-label-sm font-semibold text-on-surface">ACCOUNTS_PAYABLE_CORPUS_v2</span>
+</div>
+<span class="hidden sm:inline font-label-sm text-label-sm text-tertiary">|</span>
+<span class="font-label-sm text-label-sm text-tertiary">STAGE: EVAL/FINAL</span>
+</div>
+<div class="flex items-center gap-space-sm self-start lg:self-auto">
+<div class="px-space-sm py-0.5 bg-surface-container-lowest rounded-DEFAULT text-tertiary flex items-center gap-1">
+<span class="font-label-sm text-label-sm">DETERMINISTIC SEED:</span>
+<span class="font-label-sm text-label-sm font-semibold text-on-surface">0x88F2A9</span>
+</div>
+<button class="px-space-sm py-1 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded-DEFAULT flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span>EXPORT RAW LEDGER .CSV</span>
+</button>
+</div>
+</div>
+<!-- Section Title & Status Anchor -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-space-sm border-b border-surface-container-highest pb-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 text-tertiary font-label-sm text-label-sm mb-1">
+<span>COORDINATE: AX-904 // VERIFICATION_EVAL</span>
+<span>+</span>
+<span>SYS.EXEC: SECURE</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight uppercase">
+          Verification Benchmark &amp; Config Comparison
+        </h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-tertiary uppercase">ENFORCEMENT_PROTOCOL:</span>
+<span class="px-space-sm py-0.5 bg-primary text-on-primary font-label-sm text-label-sm font-bold uppercase rounded-DEFAULT">
+          STRICT DETERMINISTIC GATING
+        </span>
+</div>
+</div>
+<!-- 1. SUMMARY TELEMETRY CARDS (Top Strip) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Metric 1: Total Scenarios -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between text-tertiary font-label-sm text-label-sm">
+<span>PAR-01 // RUNS</span>
+<span>+</span>
+</div>
+<div class="my-space-sm">
+<div class="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">1,200</div>
+<div class="font-label-md text-label-md text-tertiary mt-0.5">SYNTHETIC INVOICE SUITES</div>
+</div>
+<div class="pt-space-xs border-t border-surface-container-highest flex items-center justify-between font-label-sm text-label-sm text-tertiary">
+<span>COVERAGE: 100% CORPUS</span>
+<span class="text-on-surface font-semibold">T-CYCLE: 48m</span>
+</div>
+</div>
+<!-- Metric 2: Malicious Injections -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between text-tertiary font-label-sm text-label-sm">
+<span>PAR-02 // ADVERSARIAL</span>
+<span class="text-primary font-bold">!</span>
+</div>
+<div class="my-space-sm">
+<div class="font-headline-xl text-headline-xl text-primary font-bold tracking-tight">184</div>
+<div class="font-label-md text-label-md text-tertiary mt-0.5">INJECTED ATTACK VECTORS</div>
+</div>
+<div class="pt-space-xs border-t border-surface-container-highest flex items-center justify-between font-label-sm text-label-sm text-tertiary">
+<span>MUTATIONS: JAILBREAK / FS</span>
+<span class="text-error font-semibold">CRITICAL TEST</span>
+</div>
+</div>
+<!-- Metric 3: Baseline Hallucination -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between text-tertiary font-label-sm text-label-sm">
+<span>PAR-03 // UNGUARDED ERR</span>
+<span>+</span>
+</div>
+<div class="my-space-sm">
+<div class="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">14.8%</div>
+<div class="font-label-md text-label-md text-tertiary mt-0.5">RAW LLM HALLUCINATION</div>
+</div>
+<div class="pt-space-xs border-t border-surface-container-highest flex items-center justify-between font-label-sm text-label-sm text-tertiary">
+<span>DELTA TO ENSEMBLE</span>
+<span class="text-primary font-semibold">-14.6% PT</span>
+</div>
+</div>
+<!-- Metric 4: Policy Enforcement -->
+<div class="bg-surface-container-high p-space-md rounded-DEFAULT relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between text-tertiary font-label-sm text-label-sm">
+<span>PAR-04 // GATING MATRIX</span>
+<span class="w-2 h-2 bg-primary-container animate-pulse"></span>
+</div>
+<div class="my-space-sm">
+<div class="font-headline-md text-headline-md text-on-surface font-bold uppercase tracking-tight">ZERO-TOLERANCE</div>
+<div class="font-label-md text-label-md text-primary font-semibold mt-0.5">STRICT ENFORCEMENT ACTIVE</div>
+</div>
+<div class="pt-space-xs border-t border-surface-container-highest flex items-center justify-between font-label-sm text-label-sm text-tertiary">
+<span>SIDE-EFFECT POLICY</span>
+<span class="text-on-surface font-semibold">[AIR-GAPPED]</span>
+</div>
+</div>
+</div>
+<!-- 2. PRIMARY COMPARATIVE TABLE -->
+<div class="bg-surface-container-lowest rounded-DEFAULT overflow-hidden">
+<!-- Table Header Bar -->
+<div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm border-b border-surface-container-highest">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-tertiary font-bold">+</span>
+<span class="font-label-md text-label-md font-bold uppercase text-on-surface">EVALUATION MATRIX // ARCHITECTURAL CONFIGURATIONS (N=1,200)</span>
+</div>
+<div class="flex items-center gap-space-md text-tertiary font-label-sm text-label-sm">
+<span>SORT: STRICTNESS DESC</span>
+<span>VERIFIER: V4.8.2-AST</span>
+</div>
+</div>
+<!-- Table Viewport -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-tertiary font-label-sm text-label-sm border-b border-surface-container-highest">
+<th class="py-space-sm px-space-md uppercase font-medium">CONFIGURATION &amp; TOPOLOGY</th>
+<th class="py-space-sm px-space-md uppercase font-medium text-right">VALID PLANS</th>
+<th class="py-space-sm px-space-md uppercase font-medium text-right">DRY-RUN SUCCESS</th>
+<th class="py-space-sm px-space-md uppercase font-medium text-right">UNSAFE BLOCKED</th>
+<th class="py-space-sm px-space-md uppercase font-medium text-right">MEDIAN LATENCY</th>
+<th class="py-space-sm px-space-md uppercase font-medium">DISPOSITION / VERDICT</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-highest font-code-body text-code-body">
+<!-- ROW 1: Single model -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Single model</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest text-tertiary font-label-sm text-label-sm rounded-DEFAULT">[STANDALONE]</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary mt-1">Gemini 1.5 Pro (Direct unverified generation)</span>
+<div class="font-label-sm text-label-sm text-tertiary flex items-center gap-2 mt-1">
+<span>GATES: 0</span>
+<span>•</span>
+<span>VERIFIER: OFF</span>
+<span>•</span>
+<span>AST_VALIDATE: NO</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-on-surface">82.4%</div>
+<div class="font-label-sm text-label-sm text-tertiary">989 / 1,200</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-error">69.1%</div>
+<div class="font-label-sm text-label-sm text-tertiary">829 / 1,200</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-error">41.3%</div>
+<div class="font-label-sm text-label-sm text-tertiary">76 / 184</div>
+<div class="mt-1">
+<span class="px-1.5 py-0.5 bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold rounded-DEFAULT uppercase">
+                    UNGUARDED
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-on-surface">1,420ms</div>
+<div class="font-label-sm text-label-sm text-tertiary">BASELINE</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1 items-start">
+<span class="px-2 py-1 bg-surface-container-highest text-error font-label-sm text-label-sm font-bold uppercase rounded-DEFAULT">
+                    [ UNGUARDED // REJECTED ]
+                  </span>
+<span class="font-body-sm text-body-sm text-tertiary">Fails compliance threshold &gt;99%</span>
+</div>
+</td>
+</tr>
+<!-- ROW 2: Single model + verifier -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Single model + verifier</span>
+<span class="px-1.5 py-0.2 bg-surface-container text-tertiary font-label-sm text-label-sm rounded-DEFAULT">[GATED]</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary mt-1">Gemini 1.5 Pro + Static Rule AST Compiler &amp; Sandbox Verifier</span>
+<div class="font-label-sm text-label-sm text-tertiary flex items-center gap-2 mt-1">
+<span>GATES: 3</span>
+<span>•</span>
+<span>VERIFIER: ON</span>
+<span>•</span>
+<span>AST_VALIDATE: YES</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-on-surface">94.6%</div>
+<div class="font-label-sm text-label-sm text-tertiary">1,135 / 1,200</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-on-surface">91.8%</div>
+<div class="font-label-sm text-label-sm text-tertiary">1,102 / 1,200</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-on-surface">98.4%</div>
+<div class="font-label-sm text-label-sm text-tertiary">181 / 184</div>
+<div class="mt-1">
+<span class="px-1.5 py-0.5 bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold rounded-DEFAULT uppercase">
+                    [SBX] SANDBOX GATED
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-on-surface">1,890ms</div>
+<div class="font-label-sm text-label-sm text-tertiary">+470ms OVERHEAD</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1 items-start">
+<span class="px-2 py-1 bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold uppercase rounded-DEFAULT">
+                    [ CONDITIONALLY COMPLIANT ]
+                  </span>
+<span class="font-body-sm text-body-sm text-tertiary">3 leakage attempts leaked past parser</span>
+</div>
+</td>
+</tr>
+<!-- ROW 3: Full ensemble + verifier (HIGHLIGHTED WINNING ROW) -->
+<tr class="bg-surface-container-low/60 hover:bg-surface-container-low transition-colors relative">
+<td class="py-space-md px-space-md relative">
+<!-- Visual Safety Orange Accent Marker -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex flex-col pl-2">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Full ensemble + verifier</span>
+<span class="px-1.5 py-0.2 bg-primary-container text-on-primary font-label-sm text-label-sm font-bold rounded-DEFAULT">[SPEC_GOLD]</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface font-medium mt-1">Dual Planners [Gemini 1.5 + Groq Llama] + Claude 3.5 Critic + Mistral Repairer + Deterministic Verifier</span>
+<div class="font-label-sm text-label-sm text-primary flex items-center gap-2 mt-1 font-semibold">
+<span>GATES: 7</span>
+<span>•</span>
+<span>VERIFIER: AIR-GAP</span>
+<span>•</span>
+<span>MULTI-MODEL CONSENSUS: ACTIVE</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-primary">99.8%</div>
+<div class="font-label-sm text-label-sm text-on-surface font-medium">1,198 / 1,200</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-primary">99.2%</div>
+<div class="font-label-sm text-label-sm text-on-surface font-medium">1,190 / 1,200</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-primary">100.0%</div>
+<div class="font-label-sm text-label-sm text-on-surface font-medium">184 / 184</div>
+<div class="mt-1">
+<span class="px-1.5 py-0.5 bg-primary text-on-primary font-label-sm text-label-sm font-bold rounded-DEFAULT uppercase">
+                    ZERO-DEFECT / AIR-GAPPED
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right align-top">
+<div class="font-label-lg text-label-lg font-bold text-on-surface">2,410ms</div>
+<div class="font-label-sm text-label-sm text-tertiary">+990ms (TOTAL REPAIR)</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1 items-start">
+<span class="px-2 py-1 bg-primary-container text-on-primary font-label-sm text-label-sm font-bold uppercase rounded-DEFAULT shadow-sm">
+                    [ RECOMMENDED // PRODUCTION SPEC ]
+                  </span>
+<span class="font-body-sm text-body-sm text-primary font-medium">Zero-defect execution across all runs</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Sub-bar Footer -->
+<div class="p-space-sm px-space-md bg-surface-container text-tertiary font-label-sm text-label-sm flex flex-col sm:flex-row justify-between items-center gap-2 border-t border-surface-container-highest">
+<div>TOTAL SCENARIOS EVALUATED: 1,200 SYNTHETIC SUITES // DISPATCH VERIFICATION PROTOCOL: IEEE-754 / ISO-26262 ADAPTED</div>
+<div class="flex items-center gap-space-sm text-on-surface">
+<span>STAMP: 2025-02-23T04:19:12Z</span>
+<span>•</span>
+<span>HASH: BLAKE3_VERIFIED</span>
+</div>
+</div>
+</div>
+<!-- 3. DETAIL / METHODOLOGY INSPECTOR (Bottom Split Deck) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- Left Side: Empirical Findings (7 Cols) -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-space-md rounded-DEFAULT flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-surface-container-highest pb-space-sm">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface uppercase tracking-tight">
+                Key Empirical Findings // Deterministic Guarantee
+              </h2>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary">DOC-REF: AX-TF-904-B</span>
+</div>
+<!-- Finding Cards -->
+<div class="flex flex-col gap-space-sm">
+<div class="p-space-sm bg-surface-container-low rounded-DEFAULT flex items-start gap-space-md">
+<span class="font-label-md text-label-md font-bold text-primary mt-0.5">01</span>
+<div class="flex flex-col">
+<div class="font-body-md text-body-md font-semibold text-on-surface">
+                  Ensemble consensus eliminates 99.2% of parameter hallucinations prior to AST compilation.
+                </div>
+<div class="font-body-sm text-body-sm text-tertiary mt-0.5">
+                  Dual-planner cross-checking forces agreement on accounting GL codes, recipient banking hashes, and decimal tolerances. Mismatches trigger autonomous critic rejection before code generation begins.
+                </div>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-DEFAULT flex items-start gap-space-md">
+<span class="font-label-md text-label-md font-bold text-primary mt-0.5">02</span>
+<div class="flex flex-col">
+<div class="font-body-md text-body-md font-semibold text-on-surface">
+                  The deterministic verifier acts as an absolute circuit breaker: 0.0% unauthorized file writes or socket connections leaked.
+                </div>
+<div class="font-body-sm text-body-sm text-tertiary mt-0.5">
+                  Static AST verification blocks out-of-schema system calls. Even when the underlying LLM attempts prompt-injection breakout or payload traversal, deterministic dispatch boundaries remain completely unbroken.
+                </div>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-DEFAULT flex items-start gap-space-md">
+<span class="font-label-md text-label-md font-bold text-primary mt-0.5">03</span>
+<div class="flex flex-col">
+<div class="font-body-md text-body-md font-semibold text-on-surface">
+                  Trade-off analysis: +990ms latency penalty delivers a 58.7% absolute gain in security interception.
+                </div>
+<div class="font-body-sm text-body-sm text-tertiary mt-0.5">
+                  Total verification overhead scales linearly with repair cycles. In financial workflows (AP/AR batch transfers), an execution interval of 2.41s fits well within asynchronous queuing thresholds while ensuring 100% policy compliance.
+                </div>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-space-md border-t border-surface-container-highest flex items-center justify-between text-tertiary font-label-sm text-label-sm mt-space-md">
+<span>THEORETICAL MAXIMUM RISK: &lt; 0.0001% AT P=0.99</span>
+<span class="font-semibold text-on-surface">VERIFIED BY PROVE-ENGINE v2</span>
+</div>
+</div>
+<!-- Right Side: Confidence Interval & Statistical Ledger (5 Cols) -->
+<div class="lg:col-span-5 bg-surface-container-low p-space-md rounded-DEFAULT flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-surface-container-highest pb-space-sm">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-on-surface"></span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface uppercase tracking-tight">
+                Confidence Interval &amp; Statistical Ledger
+              </h2>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary">CI: 99.9%</span>
+</div>
+<!-- Latency Distribution Grid -->
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm text-tertiary uppercase">EXECUTION LATENCY PERCENTILES (ENSEMBLE + VERIFIER)</span>
+<div class="grid grid-cols-3 gap-space-xs text-center">
+<div class="p-space-sm bg-surface-container-lowest rounded-DEFAULT">
+<div class="font-label-sm text-label-sm text-tertiary">p50 MEDIAN</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1">2,410ms</div>
+<div class="font-label-sm text-label-sm text-primary mt-0.5">NOMINAL</div>
+</div>
+<div class="p-space-sm bg-surface-container-lowest rounded-DEFAULT">
+<div class="font-label-sm text-label-sm text-tertiary">p95 TAIL</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1">3,120ms</div>
+<div class="font-label-sm text-label-sm text-tertiary mt-0.5">+1 REPAIR</div>
+</div>
+<div class="p-space-sm bg-surface-container-lowest rounded-DEFAULT">
+<div class="font-label-sm text-label-sm text-tertiary">p99 WORST</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1">4,450ms</div>
+<div class="font-label-sm text-label-sm text-error mt-0.5">+2 REPAIRS</div>
+</div>
+</div>
+</div>
+<!-- Micro SVG Sparkline Latency Visualization -->
+<div class="p-space-sm bg-surface-container-lowest rounded-DEFAULT flex flex-col gap-2">
+<div class="flex items-center justify-between font-label-sm text-label-sm text-tertiary">
+<span>LATENCY DENSITY SPECTRUM</span>
+<span class="text-on-surface font-mono">0ms ──── 2.4s ──── 5.0s</span>
+</div>
+<svg class="w-full h-12 text-primary" fill="none" preserveaspectratio="none" viewbox="0 0 300 48">
+<!-- Grid lines -->
+<line stroke="currentColor" stroke-dasharray="2 2" stroke-opacity="0.1" x1="0" x2="300" y1="40" y2="40"></line>
+<line stroke="currentColor" stroke-dasharray="2 2" stroke-opacity="0.1" x1="0" x2="300" y1="20" y2="20"></line>
+<!-- Distribution curve -->
+<path d="M 0 44 Q 50 44 90 42 T 130 35 T 150 10 T 170 32 T 210 40 T 260 43 L 300 44" fill="none" stroke="currentColor" stroke-width="2"></path>
+<circle cx="150" cy="10" fill="currentColor" r="3"></circle>
+</svg>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-tertiary">
+<span>BASELINE PROMPT</span>
+<span class="text-primary font-bold">MODE PEAK: 2,390ms</span>
+<span>SYNTAX VERIFIER</span>
+</div>
+</div>
+<!-- Cryptographic Validation Block -->
+<div class="p-space-sm bg-surface-container-lowest rounded-DEFAULT flex flex-col gap-1">
+<div class="flex items-center justify-between text-tertiary font-label-sm text-label-sm">
+<span>CRYPTOGRAPHIC VALIDATION STAMP</span>
+<span class="text-primary font-bold">[IMMUTABLE]</span>
+</div>
+<div class="font-label-sm text-label-sm font-mono break-all text-on-surface bg-surface-container-high p-1.5 rounded-DEFAULT">
+              BLAKE3: d41d8cd98f00b204e9800998ecf8427e02d9b23f81e28f3
+            </div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-tertiary mt-0.5">
+<span>SIGNATURE: VALID_ED25519</span>
+<span>KEY_ID: 0x98A_PROD_ROOT</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="pt-space-md border-t border-surface-container-highest flex flex-col sm:flex-row items-center gap-space-sm mt-space-md">
+<button class="w-full sm:w-1/2 py-2 px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md uppercase rounded-DEFAULT flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>RUN RE-VERIFICATION PASS</span>
+</button>
+<button class="w-full sm:w-1/2 py-2 px-space-sm bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md font-bold uppercase rounded-DEFAULT flex items-center justify-center gap-1.5 transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>DEPLOY CONFIG TO PROD</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Final Sub-Footer Registration Coordinates -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-tertiary font-label-sm text-label-sm border-t border-surface-container-highest pt-space-sm">
+<div class="flex items-center gap-space-sm">
+<span>RUN_ID: EVAL-RUN-2025-02-23-089</span>
+<span>•</span>
+<span>SEED_ENTROPY: 0.99941</span>
+<span>•</span>
+<span>NODE: CLUSTER_WEST_PROD_04</span>
+</div>
+<div>
+<span>DRAUGHT COORDINATES: 8PX HAILINE REGISTRATION ACTIVE</span>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

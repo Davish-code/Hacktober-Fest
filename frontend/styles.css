@@ -1,0 +1,46 @@
+/* TrustFlow - Industrial Workbench Custom Styling */
+
+/* Google Fonts fallback / preload styling */
+@layer base {
+  body {
+    background-color: #fcf9f2;
+    color: #1c1c18;
+  }
+}
+
+/* Custom technical scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1eee7;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbc6bb;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #969288;
+}
+
+/* Subtle step pulse for active execution */
+@keyframes stepPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.step-line-pulse {
+  animation: stepPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Focus styles for keyboard accessibility */
+:focus-visible {
+  outline: 2px solid #ae3200 !important;
+  outline-offset: 2px !important;
+}
+
+/* Technical crosshatch progress gauge */
+.crosshatch-pattern {
+  background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.12) 0, rgba(0, 0, 0, 0.12) 2px, transparent 0, transparent 6px);
+}

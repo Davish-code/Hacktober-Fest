@@ -1,0 +1,9 @@
+customer_id,name,country,signup_date,status
+101,Alice Smith,USA,2023-01-15,active
+102,Bob Johnson,Canada,2023-02-20,active
+103,Charlie Davis,USA,2023-03-10,inactive
+104,Diana Prince,UK,2023-04-05,active
+105,Evan Wright,Germany,2023-05-12,active
+106,Fiona Gallagher,USA,2023-06-18,active
+107,George Clark,France,2023-07-22,inactive
+108,Hannah Abbott,USA,2023-08-30,active
