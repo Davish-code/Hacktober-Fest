@@ -78,76 +78,94 @@ async function checkHealth() {
     if (serverWakeInterval) clearInterval(serverWakeInterval);
     serverWakeInterval = setInterval(() => {
         const elapsedSec = ((Date.now() - serverWakeStartTime) / 1000).toFixed(1);
-        if (timerDisplay) timerDisplay.textContent = `${elapsedSec}s elapsed (max 60s)`;
-        const pct = Math.min(95, Math.floor((elapsedSec / 60) * 100));
+        if (timerDisplay) timerDisplay.textContent = `${elapsedSec}s elapsed (max 90s)`;
+        const pct = Math.min(95, Math.floor((elapsedSec / 90) * 100));
         if (progressPct) progressPct.textContent = `${pct}%`;
         if (progressBar) progressBar.style.width = `${pct}%`;
     }, 200);
 
+    // Show wake banner after 2.5s (Render free tier cold start can take 30-60s)
     const wakeTimer = setTimeout(() => {
         if (wakeBanner) wakeBanner.classList.remove("hidden");
     }, 2500);
 
-    try {
-        const res = await fetch(`${API_BASE}/api/health`);
-        clearTimeout(wakeTimer);
-        clearInterval(serverWakeInterval);
+    // Retry polling: attempt every 5 seconds for up to 90 seconds total
+    const MAX_WAIT_MS = 90000;
+    const POLL_INTERVAL_MS = 5000;
 
-        if (res.ok) {
-            const data = await res.json();
-            if (badge) {
-                badge.className = THEME_MAP.statusBadge.online;
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span><span>Connected (${data.actions_available} Safe Actions)</span>`;
-            }
-            if (modePill) {
-                modePill.textContent = data.mock_mode ? "Mock" : "Live";
-            }
-            // Update the live-mode indicator badge
-            const liveIndicator = document.getElementById("live-mode-indicator");
-            const liveLabel = document.getElementById("live-mode-label");
-            if (liveIndicator) {
-                liveIndicator.classList.remove("hidden");
-                if (data.mock_mode) {
-                    liveIndicator.classList.remove("text-tertiary");
-                    liveIndicator.classList.add("text-status-warning");
-                    if (liveLabel) liveLabel.textContent = "Mock LLM";
-                } else {
-                    liveIndicator.classList.remove("text-status-warning");
-                    liveIndicator.classList.add("text-tertiary");
-                    if (liveLabel) liveLabel.textContent = "Live LLM";
+    const pollHealth = async () => {
+        const elapsed = Date.now() - serverWakeStartTime;
+
+        // Try the request with a 4s timeout per attempt
+        const controller = new AbortController();
+        const fetchTimeout = setTimeout(() => controller.abort(), 4000);
+
+        try {
+            const res = await fetch(`${API_BASE}/api/health`, { signal: controller.signal });
+            clearTimeout(fetchTimeout);
+
+            if (res.ok) {
+                clearTimeout(wakeTimer);
+                clearInterval(serverWakeInterval);
+                const data = await res.json();
+
+                if (badge) {
+                    badge.className = THEME_MAP.statusBadge.online;
+                    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span><span>Connected (${data.actions_available} Safe Actions)</span>`;
                 }
-            }
+                if (modePill) modePill.textContent = data.mock_mode ? "Mock" : "Live";
 
-            // Update real checklist items
-            updateChecklistItem("core", true, `FastAPI daemon responding: ${data.service} (200 OK)`);
-            updateChecklistItem("actions", true, `${data.actions_available} verified safe actions active in registry`);
-            updateChecklistItem("mode", true, `${data.environment} · ${data.mock_mode ? 'Mock LLM mode' : 'Live LLM mode'}`);
+                const liveIndicator = document.getElementById("live-mode-indicator");
+                const liveLabel = document.getElementById("live-mode-label");
+                if (liveIndicator) {
+                    liveIndicator.classList.remove("hidden");
+                    if (data.mock_mode) {
+                        liveIndicator.classList.remove("text-tertiary");
+                        liveIndicator.classList.add("text-status-warning");
+                        if (liveLabel) liveLabel.textContent = "Mock LLM";
+                    } else {
+                        liveIndicator.classList.remove("text-status-warning");
+                        liveIndicator.classList.add("text-tertiary");
+                        if (liveLabel) liveLabel.textContent = "Live LLM";
+                    }
+                }
 
-            if (wakeBanner) {
-                setTimeout(() => { wakeBanner.classList.add("hidden"); }, 1200);
+                updateChecklistItem("core", true, `FastAPI daemon responding: ${data.service} (200 OK)`);
+                updateChecklistItem("actions", true, `${data.actions_available} verified safe actions active in registry`);
+                updateChecklistItem("mode", true, `${data.environment} · ${data.mock_mode ? 'Mock LLM mode' : 'Live LLM mode'}`);
+
+                if (wakeBanner) setTimeout(() => { wakeBanner.classList.add("hidden"); }, 1200);
+                return; // success — stop polling
+            } else {
+                throw new Error(`HTTP ${res.status}`);
             }
-        } else {
-            if (badge) {
-                badge.className = THEME_MAP.statusBadge.error;
-                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span><span>Backend Error</span>';
+        } catch (err) {
+            clearTimeout(fetchTimeout);
+            // Still within the wake window — schedule another attempt
+            if (Date.now() - serverWakeStartTime < MAX_WAIT_MS) {
+                updateChecklistItem("core", false, `Waking server... retrying in 5s (${Math.round((Date.now() - serverWakeStartTime) / 1000)}s elapsed)`);
+                setTimeout(pollHealth, POLL_INTERVAL_MS);
+            } else {
+                // Exhausted retries
+                clearTimeout(wakeTimer);
+                clearInterval(serverWakeInterval);
+                if (wakeBanner) wakeBanner.classList.remove("hidden");
+                if (badge) {
+                    badge.className = THEME_MAP.statusBadge.offline;
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-status-danger"></span><span>Backend Offline</span>';
+                }
+                updateChecklistItem("core", false, `Connection refused to ${API_BASE}. Run backend server.`);
+                updateChecklistItem("actions", false, "Unreachable - action whitelist verification pending");
+                updateChecklistItem("mode", false, "Unreachable - environment status offline");
+                updateChecklistItem("manifest", false, "Unreachable - dataset scanning halted");
             }
-            updateChecklistItem("core", false, `HTTP ${res.status}: Backend responded with error`);
-            if (wakeBanner) wakeBanner.classList.remove("hidden");
         }
-    } catch (e) {
-        clearTimeout(wakeTimer);
-        clearInterval(serverWakeInterval);
-        if (wakeBanner) wakeBanner.classList.remove("hidden");
-        if (badge) {
-            badge.className = THEME_MAP.statusBadge.offline;
-            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-status-danger"></span><span>Backend Offline</span>';
-        }
-        updateChecklistItem("core", false, `Connection refused to ${API_BASE}. Run backend server.`);
-        updateChecklistItem("actions", false, "Unreachable - action whitelist verification pending");
-        updateChecklistItem("mode", false, "Unreachable - environment status offline");
-        updateChecklistItem("manifest", false, "Unreachable - dataset scanning halted");
-    }
+    };
+
+    // Start first poll immediately
+    pollHealth();
 }
+
 
 function updateChecklistItem(itemKey, isOnline, text) {
     const icon = document.getElementById(`checklist-${itemKey}-icon`);
