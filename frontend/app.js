@@ -484,7 +484,7 @@ async function executeCurrentPlan() {
         timeline.innerHTML = `
             <div class="p-3 bg-surface-container-low border border-surface-container-highest rounded-DEFAULT text-xs text-tertiary font-sans flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                <span>Connecting to real-time execution stream...</span>
+                <span>Submitting plan for execution...</span>
             </div>
         `;
     }
@@ -493,11 +493,37 @@ async function executeCurrentPlan() {
         ? crypto.randomUUID()
         : ("run_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9));
 
+    // Step 1: POST first to register the run on the backend
+    let postPromise;
+    try {
+        postPromise = fetch(`${API_BASE}/api/execute`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ plan: currentPlan, dry_run_first: true, run_id: runId })
+        });
+    } catch (e) {
+        if (timeline) timeline.innerHTML = `<div class="bg-status-dangerBg border border-status-danger/40 rounded-DEFAULT p-3 text-status-danger text-xs font-mono">Execution Failed: ${e.message}</div>`;
+        return;
+    }
+
+    // Step 2: Open SSE stream after a short delay to allow backend to register the run
     let evtSource = null;
     let receivedEvents = 0;
 
+    await new Promise(resolve => setTimeout(resolve, 150)); // let backend register run_id
+
     try {
         evtSource = new EventSource(`${API_BASE}/api/runs/${runId}/events`);
+
+        if (timeline) {
+            timeline.innerHTML = `
+                <div class="p-3 bg-surface-container-low border border-surface-container-highest rounded-DEFAULT text-xs text-tertiary font-sans flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                    <span>Connected to real-time execution stream...</span>
+                </div>
+            `;
+        }
+
         evtSource.onmessage = (e) => {
             try {
                 const data = JSON.parse(e.data);
@@ -514,7 +540,6 @@ async function executeCurrentPlan() {
                 const item = document.createElement("div");
                 item.className = "bg-surface-container-lowest border border-surface-container-highest rounded-DEFAULT p-3 shadow-[1px_1px_0px_#1c1c18]";
 
-                // Format detail cleanly: emails are drafts only
                 let detailText = data.detail || "";
                 if (detailText.toLowerCase().includes("email")) {
                     detailText = detailText.replace(/queued|sent/gi, "Draft saved");
@@ -547,26 +572,25 @@ async function executeCurrentPlan() {
         console.warn("EventSource setup error, using POST fallback:", e);
     }
 
+    // Step 3: Await the POST response
     try {
-        const res = await fetch(`${API_BASE}/api/execute`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ plan: currentPlan, dry_run_first: true, run_id: runId })
-        });
-
+        const res = await postPromise;
         const data = await res.json();
+
         if (evtSource) {
             setTimeout(() => { evtSource.close(); }, 1200);
         }
 
-        // Render from POST response if SSE events were empty
+        // Render from POST response if SSE events were empty (SSE fallback)
         if (receivedEvents === 0 && data.steps && timeline) {
             let html = "";
             data.steps.forEach(s => {
                 const isSuccess = s.status === "SUCCESS";
                 const statusChip = isSuccess ? THEME_MAP.eventStatus.ok : THEME_MAP.eventStatus.failed;
-                let outputStr = isSuccess ? JSON.stringify(s.output) : s.error;
-                if (outputStr && outputStr.toLowerCase().includes("email")) {
+                let outputStr = isSuccess
+                    ? (s.output !== undefined && s.output !== null ? JSON.stringify(s.output) : "✓ Completed")
+                    : (s.error || "Step failed");
+                if (outputStr.toLowerCase().includes("email")) {
                     outputStr = outputStr.replace(/queued|sent/gi, "Draft saved");
                 }
 
@@ -582,7 +606,8 @@ async function executeCurrentPlan() {
                     </div>
                 `;
             });
-            timeline.innerHTML = html;
+            if (html) timeline.innerHTML = html;
+            else timeline.innerHTML = `<div class="text-xs text-tertiary p-3 font-mono">No steps returned. Check backend logs.</div>`;
         }
 
         // Handle failure state: render failed step and trigger suggested fix card
