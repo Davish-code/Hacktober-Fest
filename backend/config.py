@@ -15,7 +15,13 @@ WORKSPACE_DIR = BASE_DIR / "workspace"
 WORKSPACE_RUNS_DIR = BASE_DIR / "workspace_runs"
 SEED_DIR = BASE_DIR / "workspace_seed"
 
-DEFAULT_ALLOWED_ORIGINS = "http://localhost:3000,http://localhost:5500,http://127.0.0.1:5500"
+DEFAULT_ALLOWED_ORIGINS = (
+    "http://localhost:3000,"
+    "http://localhost:5500,"
+    "http://127.0.0.1:5500,"
+    "https://trustflow-frontend.davishtalreja.workers.dev,"
+    "https://hacktober-fest.onrender.com"
+)
 
 try:
     # pyrefly: ignore[missing-import]

@@ -47,7 +47,9 @@ else:
         "http://localhost:5500",
         "http://127.0.0.1:5500",
         "http://localhost:8000",
-        "http://127.0.0.1:8000"
+        "http://127.0.0.1:8000",
+        "https://trustflow-frontend.davishtalreja.workers.dev",
+        "https://hacktober-fest.onrender.com"
     ]
 
 # Strictly reject wildcard

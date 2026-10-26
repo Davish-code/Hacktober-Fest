@@ -11,7 +11,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: "https://trustflow-frontend.davishtalreja.workers.dev,https://hacktober-fest.onrender.com,http://localhost:3000"
       - key: CEREBRAS_API_KEY
         sync: false
       - key: CRITIC_PROVIDER
