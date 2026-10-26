@@ -339,17 +339,26 @@ function renderPlanCards(plan, failedStepId = null) {
     }
 
     const effectMap = {
+        read_file: "READ",
         READ_CSV: "READ",
+        filter_rows: "TRANSFORM",
         FILTER_ROWS: "TRANSFORM",
+        select_columns: "TRANSFORM",
         SELECT_COLUMNS: "TRANSFORM",
+        join_data: "TRANSFORM",
         JOIN_DATA: "TRANSFORM",
+        join_rows: "TRANSFORM",
+        aggregate: "TRANSFORM",
         AGGREGATE: "TRANSFORM",
+        sort_rows: "TRANSFORM",
         SORT_ROWS: "TRANSFORM",
+        write_file: "WRITE",
         EXPORT_CSV: "WRITE",
+        summarize_text: "ANALYZE",
         GENERATE_SUMMARY: "ANALYZE",
-        DRAFT_EMAIL: "EXTERNAL",
-        join_rows: "READ",
-        aggregate: "READ"
+        notify: "READ",
+        draft_email: "EXTERNAL",
+        DRAFT_EMAIL: "EXTERNAL"
     };
 
     let html = '<div class="space-y-3 relative">';
@@ -581,38 +590,88 @@ async function executeCurrentPlan() {
             setTimeout(() => { evtSource.close(); }, 1200);
         }
 
-        // Render from POST response if SSE events were empty (SSE fallback)
-        if (receivedEvents === 0 && data.steps && timeline) {
-            let html = "";
-            data.steps.forEach(s => {
-                const isSuccess = s.status === "SUCCESS";
-                const statusChip = isSuccess ? THEME_MAP.eventStatus.ok : THEME_MAP.eventStatus.failed;
-                let outputStr = isSuccess
-                    ? (s.output !== undefined && s.output !== null ? JSON.stringify(s.output) : "✓ Completed")
-                    : (s.error || "Step failed");
-                if (outputStr.toLowerCase().includes("email")) {
-                    outputStr = outputStr.replace(/queued|sent/gi, "Draft saved");
-                }
+        const stepsToRender = (data.steps && data.steps.length > 0)
+            ? data.steps
+            : (data.execution_trace || []);
 
-                html += `
-                    <div class="bg-surface-container-lowest border border-surface-container-highest rounded-DEFAULT p-3 shadow-[1px_1px_0px_#1c1c18]">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-semibold text-on-surface font-sans">Step ${s.step_id} [<span class="font-mono">${s.action}</span>]</span>
-                            <span class="${statusChip}">[${s.status}]</span>
+        if (receivedEvents === 0 && timeline) {
+            let html = "";
+            if (stepsToRender.length > 0) {
+                stepsToRender.forEach(s => {
+                    const isSuccess = s.status === "SUCCESS";
+                    const statusChip = isSuccess ? THEME_MAP.eventStatus.ok : THEME_MAP.eventStatus.failed;
+                    let outputStr = "";
+                    if (isSuccess) {
+                        if (s.output !== undefined && s.output !== null) {
+                            if (typeof s.output === "object") {
+                                if (s.output.remaining_rows !== undefined) {
+                                    outputStr = `✓ Filtered: ${s.output.remaining_rows} rows remaining`;
+                                } else if (s.output.bytes_written !== undefined) {
+                                    outputStr = `✓ Saved to ${s.output.path || "file"} (${s.output.bytes_written} bytes)`;
+                                } else if (s.output.count !== undefined) {
+                                    outputStr = `✓ Read ${s.output.count} rows (${(s.output.columns || []).join(", ")})`;
+                                } else {
+                                    outputStr = JSON.stringify(s.output);
+                                }
+                            } else {
+                                outputStr = String(s.output);
+                            }
+                        } else {
+                            outputStr = "✓ Completed";
+                        }
+                    } else {
+                        outputStr = s.error || "Step failed";
+                    }
+
+                    html += `
+                        <div class="bg-surface-container-lowest border border-surface-container-highest rounded-DEFAULT p-3 shadow-[1px_1px_0px_#1c1c18] mb-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-semibold text-on-surface font-sans">Step ${s.step_id} [<span class="font-mono">${s.action}</span>]</span>
+                                <span class="${statusChip}">[${s.status}]</span>
+                            </div>
+                            <div class="text-tertiary text-xs font-mono leading-relaxed">
+                                ${outputStr}
+                            </div>
                         </div>
-                        <div class="text-tertiary text-xs font-mono">
-                            ${outputStr}
+                    `;
+                });
+                timeline.innerHTML = html;
+            } else if (data.run_log && data.run_log.length > 0) {
+                data.run_log.forEach(item => {
+                    const statusClass = THEME_MAP.eventStatus[item.status] || THEME_MAP.eventStatus.started;
+                    html += `
+                        <div class="bg-surface-container-lowest border border-surface-container-highest rounded-DEFAULT p-3 shadow-[1px_1px_0px_#1c1c18] mb-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-semibold text-on-surface font-sans">Step ${item.step_id}</span>
+                                <span class="${statusClass}">[${(item.status || "EVENT").toUpperCase()}]</span>
+                            </div>
+                            <div class="text-tertiary text-xs font-mono leading-relaxed">
+                                ${item.detail}
+                            </div>
                         </div>
+                    `;
+                });
+                timeline.innerHTML = html;
+            } else if (data.error || !data.success) {
+                timeline.innerHTML = `
+                    <div class="bg-status-dangerBg border border-status-danger/40 rounded-DEFAULT p-3 text-status-danger text-xs font-mono">
+                        <div class="font-bold mb-1">[EXECUTION HALTED]</div>
+                        <div>${data.error || "Execution failed without step traces."}</div>
                     </div>
                 `;
-            });
-            if (html) timeline.innerHTML = html;
-            else timeline.innerHTML = `<div class="text-xs text-tertiary p-3 font-mono">No steps returned. Check backend logs.</div>`;
+            } else {
+                timeline.innerHTML = `<div class="text-xs text-tertiary p-3 font-mono">Execution completed. Check datasets tab for generated outputs.</div>`;
+            }
+        } else if (timeline && data.success) {
+            const successNotice = document.createElement("div");
+            successNotice.className = "p-2.5 bg-status-successBg border border-status-success/30 rounded-DEFAULT text-xs font-mono text-status-success flex items-center justify-between mt-2";
+            successNotice.innerHTML = `<span>✓ Execution completed successfully (${stepsToRender.length} steps verified)</span><span class="font-bold font-mono">[COMPLETED]</span>`;
+            timeline.appendChild(successNotice);
         }
 
         // Handle failure state: render failed step and trigger suggested fix card
         if (!data.success) {
-            const failedStep = (data.steps || []).find(s => s.status === "FAILED");
+            const failedStep = (stepsToRender || []).find(s => s.status === "FAILED");
             if (failedStep) {
                 renderPlanCards(currentPlan, failedStep.step_id);
                 showSuggestedFix(failedStep);
@@ -798,6 +857,57 @@ function switchAppView(viewName) {
     }
 }
 
+// Trigger Live Benchmark Evaluation via POST /api/benchmark/run
+async function triggerLiveBenchmark() {
+    const container = document.getElementById("benchmark-content-container");
+    if (!container) return;
+
+    const runBtn = document.getElementById("run-live-benchmark-btn");
+    const refreshBtn = document.getElementById("refresh-benchmark-btn");
+    if (runBtn) {
+        runBtn.innerHTML = `⟳ Running 23 Scenarios...`;
+        runBtn.disabled = true;
+    }
+    if (refreshBtn) refreshBtn.disabled = true;
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-surface-container-highest rounded-DEFAULT p-8 shadow-[2px_2px_0px_#1c1c18] flex flex-col items-center text-center max-w-xl mx-auto my-6">
+            <span class="w-4 h-4 rounded-full bg-primary animate-ping mb-3"></span>
+            <h3 class="text-base font-bold text-on-surface uppercase tracking-wide mb-2 font-mono">
+                Executing Live Benchmark Evaluation
+            </h3>
+            <p class="text-xs text-tertiary mb-4 font-mono">
+                Running 23 benchmark pipeline prompts against active deterministic verifier &amp; schema grounding...
+            </p>
+            <div class="w-full bg-surface-container h-2 border border-surface-container-highest rounded-DEFAULT overflow-hidden">
+                <div class="bg-primary h-full crosshatch-pattern animate-pulse w-full"></div>
+            </div>
+        </div>
+    `;
+
+    try {
+        const res = await fetch(`${API_BASE}/api/benchmark/run`, { method: "POST" });
+        if (!res.ok) throw new Error(`Benchmark evaluation failed with status ${res.status}`);
+        const data = await res.json();
+        renderBenchmarkData(container, data);
+    } catch (e) {
+        container.innerHTML = `
+            <div class="bg-status-dangerBg border border-status-danger/40 rounded-DEFAULT p-4 text-status-danger text-xs font-mono max-w-xl mx-auto">
+                <strong>Benchmark Error:</strong> ${e.message}
+                <div class="mt-2">
+                    <button type="button" onclick="loadBenchmarkResults()" class="px-2 py-1 bg-surface-container border border-surface-container-highest text-on-surface rounded-DEFAULT">Reload Cached Benchmark</button>
+                </div>
+            </div>
+        `;
+    } finally {
+        if (runBtn) {
+            runBtn.innerHTML = `[ Run Live Benchmark ⚡ ]`;
+            runBtn.disabled = false;
+        }
+        if (refreshBtn) refreshBtn.disabled = false;
+    }
+}
+
 // Benchmark screen: read eval/results.json. If missing, show honest empty state.
 async function loadBenchmarkResults() {
     const container = document.getElementById("benchmark-content-container");
@@ -810,6 +920,7 @@ async function loadBenchmarkResults() {
     }
 
     const candidateUrls = [
+        `${API_BASE}/api/benchmark?t=${Date.now()}`,
         `${API_BASE}/api/benchmark`,
         "../eval/results.json",
         "/eval/results.json",

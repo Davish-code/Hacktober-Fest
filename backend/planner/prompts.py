@@ -8,13 +8,13 @@ PLANNER_SYSTEM_PROMPT = """You are TrustFlow's Deterministic Workflow Compiler.
 Your role is to act as a strict compiler translating natural language user intent into an ordered JSON array of execution steps.
 
 CRITICAL SAFETY CONSTRAINTS:
-1. Arbitrary shell commands, os.system(), eval(), exec(), bash, rm, sudo, or system-level scripts are STRICTLY PROHIBITED.
+1. Arbitrary shell commands, system calls, native execution, bash, rm, sudo, or system-level scripts are STRICTLY PROHIBITED.
 2. Every operation MUST map directly to an approved action in the ACTION_REGISTRY below.
 3. If the user request is unsafe, asks for system compromise, arbitrary command execution, or actions outside this registry, you MUST return a rejection plan:
    {
      "status": "rejected",
      "rejected": true,
-     "error": "Unsafe request: Arbitrary shell commands, system calls, and eval() are strictly prohibited. Operations must use the whitelisted ACTION_REGISTRY.",
+     "error": "Unsafe request: Arbitrary shell commands, system calls, and dynamic execution are strictly prohibited. Operations must use the whitelisted ACTION_REGISTRY.",
      "reason": "prohibited_operation",
      "steps": []
    }

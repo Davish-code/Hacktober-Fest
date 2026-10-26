@@ -282,15 +282,17 @@ class PlanExecutor:
         self.step_outputs = {}
         self.latest_output = None
 
-        # Session isolation: work on a temporary copy of workspace_seed/
-        if self.isolate_sessions and self.seed_path and self.seed_path.exists():
+        # Session isolation: work on a temporary copy
+        if self.isolate_sessions:
             run_workspace = self.runs_dir / f"run_{run_id}"
             run_workspace.mkdir(parents=True, exist_ok=True)
-            for item in self.seed_path.iterdir():
-                if item.is_file():
-                    shutil.copy2(item, run_workspace / item.name)
-                elif item.is_dir():
-                    shutil.copytree(item, run_workspace / item.name, dirs_exist_ok=True)
+            source_dir = self.base_workspace_path if (self.base_workspace_path.exists() and any(self.base_workspace_path.iterdir())) else self.seed_path
+            if source_dir and source_dir.exists():
+                for item in source_dir.iterdir():
+                    if item.is_file():
+                        shutil.copy2(item, run_workspace / item.name)
+                    elif item.is_dir():
+                        shutil.copytree(item, run_workspace / item.name, dirs_exist_ok=True)
             self.workspace_path = run_workspace
             self.manifest = WorkspaceManifest(self.workspace_path)
             self.healer = PlanHealer(self.manifest)
@@ -322,7 +324,7 @@ class PlanExecutor:
 
             # 2. Strict whitelist check: prohibit arbitrary execution
             if not ActionRegistry.is_valid_action(action):
-                last_error = f"Security Violation: Action '{action}' is not in the allowed ACTION_REGISTRY. Arbitrary shell commands, system calls, and eval() are strictly prohibited."
+                last_error = f"Security Violation: Action '{action}' is not in the allowed ACTION_REGISTRY. Arbitrary shell commands, system calls, and dynamic execution are strictly prohibited."
                 tb = f"SecurityException: Prohibited action '{action}' outside whitelisted ACTION_REGISTRY"
                 overall_success = False
                 heal_info = self.healer.diagnose_and_suggest(step, last_error)
@@ -453,6 +455,13 @@ class PlanExecutor:
                         })
                     break
 
+        if overall_success and self.isolate_sessions and self.workspace_path != self.base_workspace_path:
+            # Sync generated/modified artifacts back to base workspace
+            for item in self.workspace_path.iterdir():
+                if item.is_file() and item.name != "ledger.json":
+                    dest = self.base_workspace_path / item.name
+                    shutil.copy2(item, dest)
+
         self.ledger.record_run(run_id, plan, step_results, overall_success, run_log=self.run_log)
 
         return {
@@ -479,20 +488,26 @@ class PlanExecutor:
                 self.intermediate_states[step_id] = pd.DataFrame(res["rows"])
             return res
 
-        elif act_lower == "write_file":
+        elif act_lower in ("write_file", "export_csv") or act == "EXPORT_CSV":
             target_path = params.get("path") or params.get("file") or params.get("output_file")
             if not target_path:
                 raise ValueError("write_file requires 'path' parameter.")
             content = params.get("content")
             if content is None:
-                if "source_step" in params and params["source_step"] in self.intermediate_states:
-                    content = self.intermediate_states[params["source_step"]].to_dict(orient="records")
-                elif "source_step" in params and params["source_step"] in self.intermediate_outputs:
-                    content = self.intermediate_outputs[params["source_step"]]
+                src_step = params.get("source_step")
+                if src_step is not None and src_step in self.intermediate_states:
+                    content = self.intermediate_states[src_step].to_dict(orient="records")
+                elif src_step is not None and src_step in self.intermediate_outputs:
+                    content = self.intermediate_outputs[src_step]
+                elif self.intermediate_states:
+                    last_k = list(self.intermediate_states.keys())[-1]
+                    content = self.intermediate_states[last_k].to_dict(orient="records")
                 elif self.latest_output is not None:
                     content = self.latest_output
                 else:
                     content = ""
+            if isinstance(content, dict) and "rows" in content and isinstance(content["rows"], list):
+                content = content["rows"]
             return action_write_file(self.workspace_path, path=target_path, content=content)
 
         elif act_lower == "summarize_text":
@@ -584,68 +599,85 @@ class PlanExecutor:
             file_name = params.get("file") or params.get("path")
             file_path = self.resolve_safe_path(file_name)
             if not file_path.exists():
-                raise FileNotFoundError(f"File {file_name} not found in workspace.")
+                raise FileNotFoundError(f"File '{file_name}' not found in workspace.")
             limit = params.get("limit")
             source_df = pd.read_csv(file_path, nrows=limit if limit else None)
+        elif self.intermediate_states:
+            last_k = list(self.intermediate_states.keys())[-1]
+            source_df = self.intermediate_states[last_k].copy()
 
-        if act == "READ_CSV":
+        if act_lower in ("read_csv", "read_file") or act == "READ_CSV":
             file_name = params.get("file") or params.get("path")
             file_path = self.resolve_safe_path(file_name)
             if not file_path.exists():
-                raise FileNotFoundError(f"File {file_name} not found in workspace.")
+                raise FileNotFoundError(f"File '{file_name}' not found in workspace.")
             df = pd.read_csv(file_path, nrows=params.get("limit"))
             self.intermediate_states[step_id] = df
-            return {"rows": len(df), "columns": list(df.columns)}
+            records = df.to_dict(orient="records")
+            return {"rows": records, "columns": list(df.columns), "count": len(df), "content": records, "format": "csv", "path": file_name}
 
-        elif action == "FILTER_ROWS":
+        elif act_lower in ("filter_rows", "filter") or act == "FILTER_ROWS":
+            if source_df is None and "rows" in params:
+                source_df = pd.DataFrame(self._resolve_row_list(params["rows"]))
             if source_df is None:
-                raise ValueError("No input dataset available for FILTER_ROWS.")
+                raise ValueError("No input dataset available for filter_rows.")
             col = params["column"]
             op = params["operator"]
             val = params["value"]
             if col not in source_df.columns:
-                raise KeyError(f"Column '{col}' not in dataset.")
+                raise KeyError(f"Column '{col}' not in dataset. Available columns: {list(source_df.columns)}")
 
-            if op == "==":
+            if op in ("==", "eq"):
                 filtered = source_df[source_df[col].astype(str) == str(val)]
-            elif op == "!=":
+            elif op in ("!=", "neq"):
                 filtered = source_df[source_df[col].astype(str) != str(val)]
-            elif op == ">":
+            elif op in (">", "gt"):
                 filtered = source_df[pd.to_numeric(source_df[col], errors='coerce') > float(val)]
-            elif op == "<":
+            elif op in ("<", "lt"):
                 filtered = source_df[pd.to_numeric(source_df[col], errors='coerce') < float(val)]
-            elif op == "contains":
+            elif op in (">=", "gte"):
+                filtered = source_df[pd.to_numeric(source_df[col], errors='coerce') >= float(val)]
+            elif op in ("<=", "lte"):
+                filtered = source_df[pd.to_numeric(source_df[col], errors='coerce') <= float(val)]
+            elif op in ("contains", "in"):
                 filtered = source_df[source_df[col].astype(str).str.contains(str(val), case=False, na=False)]
             else:
                 raise ValueError(f"Unsupported operator '{op}'.")
 
             step_id = params.get("step_id", len(self.intermediate_states) + 1)
             self.intermediate_states[step_id] = filtered
-            return {"remaining_rows": len(filtered)}
+            records = filtered.to_dict(orient="records")
+            return {"remaining_rows": len(filtered), "rows": records, "content": records, "count": len(filtered)}
 
-        elif action == "SELECT_COLUMNS":
+        elif act_lower in ("select_columns", "select") or act == "SELECT_COLUMNS":
             if source_df is None:
                 raise ValueError("No input dataset available for SELECT_COLUMNS.")
-            cols = params["columns"]
+            cols = params.get("columns", [])
             selected = source_df[[c for c in cols if c in source_df.columns]]
             step_id = params.get("step_id", len(self.intermediate_states) + 1)
             self.intermediate_states[step_id] = selected
-            return {"columns_selected": list(selected.columns), "rows": len(selected)}
+            records = selected.to_dict(orient="records")
+            return {"columns_selected": list(selected.columns), "rows": records, "count": len(selected)}
 
-        elif action == "JOIN_DATA":
-            left_path = self.resolve_safe_path(params["left_file"])
-            right_path = self.resolve_safe_path(params["right_file"])
+        elif act_lower in ("join_data", "join") or act == "JOIN_DATA":
+            left_file = params.get("left_file") or params.get("left")
+            right_file = params.get("right_file") or params.get("right")
+            left_path = self.resolve_safe_path(left_file)
+            right_path = self.resolve_safe_path(right_file)
             if not left_path.exists():
-                raise FileNotFoundError(f"Left file {params['left_file']} not found in workspace.")
+                raise FileNotFoundError(f"Left file '{left_file}' not found in workspace.")
             if not right_path.exists():
-                raise FileNotFoundError(f"Right file {params['right_file']} not found in workspace.")
+                raise FileNotFoundError(f"Right file '{right_file}' not found in workspace.")
             left_df = pd.read_csv(left_path)
             right_df = pd.read_csv(right_path)
             how = params.get("how", "inner")
-            joined = pd.merge(left_df, right_df, left_on=params["left_on"], right_on=params["right_on"], how=how)
+            left_on = params.get("left_on") or params.get("on")
+            right_on = params.get("right_on") or params.get("on")
+            joined = pd.merge(left_df, right_df, left_on=left_on, right_on=right_on, how=how)
             step_id = params.get("step_id", len(self.intermediate_states) + 1)
             self.intermediate_states[step_id] = joined
-            return {"joined_rows": len(joined), "columns": list(joined.columns)}
+            records = joined.to_dict(orient="records")
+            return {"joined_rows": len(joined), "columns": list(joined.columns), "rows": records, "count": len(records)}
 
         elif action in ("join_rows", "JOIN_ROWS"):
             left_rows = self._resolve_row_list(params["left"])

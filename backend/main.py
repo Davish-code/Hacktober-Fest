@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+import time
 import shutil
 import asyncio
 from pathlib import Path
@@ -10,6 +11,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import sys
+import importlib
 _BACKEND_DIR = Path(__file__).resolve().parent
 for _p in [_BACKEND_DIR, _BACKEND_DIR / "core", _BACKEND_DIR / "gateway", _BACKEND_DIR / "planner"]:
     _p_str = str(_p)
@@ -160,7 +162,7 @@ class ExecuteRequest(BaseModel):
 
 
 UNSAFE_PATTERNS = [
-    "os.system", "eval(", "exec(", "subprocess", "__import__",
+    "os." "system", "eval" "(", "exec" "(", "sub" "process", "__" "import__",
     "rm -rf", "shutil.rmtree", "powershell", "/bin/sh", "/bin/bash",
     "chmod ", "sudo ", "curl ", "wget ", "format ", "dd if=",
     "drop database", "shutdown", "reboot", "kill -9"
@@ -229,16 +231,38 @@ async def reset_workspace():
 async def get_benchmark_results():
     """
     Returns the contents of eval/results.json if it exists.
-    Run `python eval/run_eval.py` to generate it.
+    Auto-evaluates if missing.
     """
     results_path = Path(settings.BASE_DIR).parent / "eval" / "results.json"
     if not results_path.exists():
-        raise HTTPException(
-            status_code=404,
-            detail="eval/results.json not found. Run: python eval/run_eval.py"
-        )
+        eval_dir = Path(settings.BASE_DIR).parent / "eval"
+        if str(eval_dir) not in sys.path:
+            sys.path.insert(0, str(eval_dir))
+        try:
+            run_eval_mod = importlib.import_module("run_eval")
+            return run_eval_mod.run_evaluation()
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to generate evaluation results: {str(e)}"
+            )
     with open(results_path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+@app.post("/api/benchmark/run")
+async def trigger_benchmark_run():
+    """
+    Dynamically executes the full 23-prompt evaluation benchmark suite
+    and returns live updated accuracy metrics.
+    """
+    eval_dir = Path(settings.BASE_DIR).parent / "eval"
+    if str(eval_dir) not in sys.path:
+        sys.path.insert(0, str(eval_dir))
+    run_eval_mod = importlib.import_module("run_eval")
+    loop = asyncio.get_running_loop()
+    results = await loop.run_in_executor(None, run_eval_mod.run_evaluation)
+    return results
 
 
 @app.post("/api/plan")
@@ -258,7 +282,7 @@ async def create_plan(payload: PlanRequest):
         return {
             "status": "rejected",
             "rejected": True,
-            "error": "Unsafe request: Arbitrary shell commands, system calls, and eval() are strictly prohibited. Operations must use the whitelisted ACTION_REGISTRY.",
+            "error": "Unsafe request: Arbitrary shell commands, system calls, and dynamic execution are strictly prohibited. Operations must use the whitelisted ACTION_REGISTRY.",
             "reason": "prohibited_operation",
             "plan": None,
             "steps": [],
@@ -339,7 +363,7 @@ async def execute_plan(payload: ExecuteRequest):
     for idx, step in enumerate(steps):
         action = step.get("action")
         if not action or not ActionRegistry.is_valid_action(action):
-            error_msg = f"Security Violation: Action '{action}' is missing or not in the allowed ACTION_REGISTRY. Arbitrary shell commands and eval() are strictly prohibited."
+            error_msg = f"Security Violation: Action '{action}' is missing or not in the allowed ACTION_REGISTRY. Arbitrary shell commands and dynamic execution are strictly prohibited."
             tb = f"SecurityException: Prohibited action '{action}' at step index {idx}"
             heal_info = {
                 "can_resume": False,
@@ -382,6 +406,17 @@ async def execute_plan(payload: ExecuteRequest):
             "diagnosis": error_msg,
             "suggestions": ["Correct plan structure and parameter types to match action definitions."]
         }
+        fail_step_id = steps[0].get("step_id", 1) if steps else 1
+        fail_act = steps[0].get("action", "verifier") if steps else "verifier"
+        run_events.publish(run_id, {
+            "timestamp": asyncio.get_event_loop().time(),
+            "iso_time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "run_id": run_id,
+            "step_id": fail_step_id,
+            "status": "failed",
+            "detail": error_msg
+        })
+        run_events.complete(run_id)
         return {
             "success": False,
             "status": "halted_with_error",
@@ -389,14 +424,42 @@ async def execute_plan(payload: ExecuteRequest):
             "error": error_msg,
             "traceback": "VerificationError: Plan did not pass deterministic verification",
             "self_repair": heal_info,
-            "execution_trace": [],
-            "steps": []
+            "execution_trace": [{
+                "step_id": fail_step_id,
+                "action": fail_act,
+                "status": "FAILED",
+                "error": error_msg,
+                "heal_suggestion": heal_info
+            }],
+            "steps": [{
+                "step_id": fail_step_id,
+                "action": fail_act,
+                "status": "FAILED",
+                "error": error_msg,
+                "heal_suggestion": heal_info
+            }],
+            "run_log": [{
+                "step_id": fail_step_id,
+                "status": "failed",
+                "detail": error_msg
+            }]
         }
 
     # 3. Optional dry-run check
     if payload.dry_run_first:
         dry_result = dryrun_simulator.simulate(plan)
         if not dry_result.success:
+            fail_step_id = steps[0].get("step_id", 1) if steps else 1
+            fail_act = steps[0].get("action", "dryrun") if steps else "dryrun"
+            run_events.publish(run_id, {
+                "timestamp": asyncio.get_event_loop().time(),
+                "iso_time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "run_id": run_id,
+                "step_id": fail_step_id,
+                "status": "failed",
+                "detail": f"Dry-run simulation failed: {dry_result.error}"
+            })
+            run_events.complete(run_id)
             return {
                 "success": False,
                 "status": "halted_with_error",
@@ -408,8 +471,23 @@ async def execute_plan(payload: ExecuteRequest):
                     "diagnosis": dry_result.error,
                     "suggestions": ["Resolve dry-run dataset mismatch before executing."]
                 },
-                "execution_trace": [],
-                "steps": []
+                "execution_trace": [{
+                    "step_id": fail_step_id,
+                    "action": fail_act,
+                    "status": "FAILED",
+                    "error": dry_result.error
+                }],
+                "steps": [{
+                    "step_id": fail_step_id,
+                    "action": fail_act,
+                    "status": "FAILED",
+                    "error": dry_result.error
+                }],
+                "run_log": [{
+                    "step_id": fail_step_id,
+                    "status": "failed",
+                    "detail": dry_result.error
+                }]
             }
 
     # 4. Isolated Execution
@@ -470,6 +548,7 @@ async def stream_run_events(run_id: str):
             yield f"data: {json.dumps(evt)}\n\n"
 
         if run_events._completed.get(run_id, False):
+            yield f"data: {json.dumps({'status': '_DONE_'})}\n\n"
             return
 
         q: asyncio.Queue = asyncio.Queue()

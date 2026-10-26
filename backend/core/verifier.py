@@ -54,12 +54,12 @@ class PlanVerifier:
                 errors.append(f"Step {step_id}: 'params' must be an object.")
                 continue
 
-            # Verify required parameters (allow 'file' and 'path' to be interchangeable)
+            # Verify required parameters (allow 'file', 'path', and 'output_file' to be interchangeable)
             for req in action_def.required_params:
                 if req not in params:
-                    if req == "path" and "file" in params:
+                    if req in ("path", "file", "output_file") and any(k in params for k in ("path", "file", "output_file")):
                         continue
-                    if req == "file" and "path" in params:
+                    if req == "content" and any(k in params for k in ("content", "source_step", "rows", "data")):
                         continue
                     errors.append(f"Step {step_id}: Missing required parameter '{req}' for action '{action}'.")
 

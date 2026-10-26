@@ -585,6 +585,14 @@
             <div class="flex items-center gap-2">
                 <button
                     type="button"
+                    id="run-live-benchmark-btn"
+                    onclick="triggerLiveBenchmark()"
+                    class="px-2.5 py-0.5 bg-primary hover:bg-accent-hover text-on-primary font-mono text-xs font-bold rounded-DEFAULT transition-colors shadow-[1px_1px_0px_#1c1c18]"
+                >
+                    [ Run Live Benchmark ⚡ ]
+                </button>
+                <button
+                    type="button"
                     id="refresh-benchmark-btn"
                     onclick="loadBenchmarkResults()"
                     class="px-2.5 py-0.5 bg-surface-container hover:bg-surface-container-high border border-surface-container-highest text-on-surface font-mono text-xs rounded-DEFAULT transition-colors"

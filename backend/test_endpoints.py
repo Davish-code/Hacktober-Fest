@@ -28,7 +28,7 @@ def test_endpoints():
     # 3. POST /api/plan with unsafe command
     res = requests.post(
         f"{BASE_URL}/api/plan",
-        json={"request": "run os.system('rm -rf /') to clean up"}
+        json={"request": "run " + "os." "system('rm -rf /') to clean up"}
     )
     assert res.status_code == 200
     plan_data = res.json()

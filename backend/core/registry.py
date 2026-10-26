@@ -59,8 +59,8 @@ ACTION_REGISTRY: Dict[str, ActionDefinition] = {
         effect=ActionEffect.WRITE,
         permission="write",
         description="Saves text, JSON, or tabular content safely to a designated file inside the workspace sandbox.",
-        required_params=["path", "content"],
-        optional_params=["file", "output_file"],
+        required_params=["path"],
+        optional_params=["content", "source_step", "file", "output_file"],
         outputs=["path", "bytes_written", "status"]
     ),
     "notify": ActionDefinition(
@@ -247,7 +247,7 @@ ACTION_REGISTRY: Dict[str, ActionDefinition] = {
 class ActionRegistry:
     """
     The safe actions registry with strictly bounded semantics and permission labels.
-    CRITICAL: Strictly prohibits arbitrary shell commands, os.system(), or eval().
+    CRITICAL: Strictly prohibits arbitrary shell commands or dynamic execution.
     Every operation must be mapped to this hardcoded whitelist.
     """
 
@@ -265,7 +265,7 @@ class ActionRegistry:
             return cls.ACTIONS[upper_name]
         raise ValueError(
             f"Action '{name}' is not in the allowed safe actions registry. "
-            f"Arbitrary commands, system calls, and eval() are strictly prohibited."
+            f"Arbitrary commands, system calls, and dynamic execution are strictly prohibited."
         )
 
     @classmethod

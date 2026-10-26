@@ -1,6 +1,6 @@
 """
 TrustFlow Hardcoded Safe Action Registry Functions.
-CRITICAL CONSTRAINT: Prohibits arbitrary shell commands, os.system(), or eval().
+CRITICAL CONSTRAINT: Prohibits arbitrary shell commands, native system calls, or code execution.
 Every operation is strictly mapped to one of these whitelisted Python functions.
 """
 

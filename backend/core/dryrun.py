@@ -42,6 +42,9 @@ class DryRunSimulator:
 
             # Check read inputs
             file_ref = params.get("file") or params.get("left_file")
+            if not file_ref and action in ("read_file", "READ_CSV") and "source_step" not in params:
+                file_ref = params.get("path")
+
             if file_ref and file_ref not in simulated_artifacts:
                 return DryRunResult(
                     success=False,
@@ -51,6 +54,9 @@ class DryRunSimulator:
 
             # Predict generated outputs
             output_file = params.get("output_file")
+            if not output_file and action in ("write_file", "EXPORT_CSV", "export_csv"):
+                output_file = params.get("path") or params.get("file")
+
             if output_file:
                 simulated_artifacts.add(output_file)
 
