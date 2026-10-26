@@ -1,6 +1,6 @@
 from typing import Dict, Any, List, Optional
 import difflib
-from .manifest import WorkspaceManifest
+from manifest import WorkspaceManifest
 
 
 class PlanHealer:

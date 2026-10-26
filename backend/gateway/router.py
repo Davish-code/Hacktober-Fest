@@ -1,10 +1,10 @@
 import os
 import logging
 from typing import Dict, List, Optional
-from ..config import settings
-from .providers import ProviderAdapter, GeminiAdapter, GroqAdapter, CerebrasAdapter, MockAdapter
-from .breaker import CircuitBreaker
-from .governor import Governor
+from config import settings
+from providers import ProviderAdapter, GeminiAdapter, GroqAdapter, CerebrasAdapter, MockAdapter
+from breaker import CircuitBreaker
+from governor import Governor
 
 logger = logging.getLogger(__name__)
 

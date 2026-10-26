@@ -1,7 +1,7 @@
 from typing import Dict, Any, List
 from pathlib import Path
-from .registry import ActionRegistry, ActionEffect
-from .manifest import WorkspaceManifest
+from registry import ActionRegistry, ActionEffect
+from manifest import WorkspaceManifest
 
 
 class DryRunResult:

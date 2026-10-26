@@ -1,5 +1,5 @@
 from typing import Dict, Any, List, Tuple
-from .manifest import WorkspaceManifest
+from manifest import WorkspaceManifest
 
 
 class GroundingResult:

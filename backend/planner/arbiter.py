@@ -1,6 +1,6 @@
 from typing import Dict, Any, Tuple, List
-from ..core.verifier import PlanVerifier
-from ..core.grounding import GroundingChecker
+from core.verifier import PlanVerifier
+from core.grounding import GroundingChecker
 
 
 class PlanArbiter:

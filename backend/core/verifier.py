@@ -1,5 +1,5 @@
 from typing import Dict, Any, List
-from .registry import ActionRegistry
+from registry import ActionRegistry
 
 
 class VerificationResult:
