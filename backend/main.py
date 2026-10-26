@@ -36,26 +36,25 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS configuration: read from ALLOWED_ORIGINS env var, never use "*"
-raw_origins = os.getenv("ALLOWED_ORIGINS", "")
-if raw_origins.strip():
-    allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip() and o.strip() != "*"]
-else:
-    allowed_origins = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "https://trustflow-frontend.davishtalreja.workers.dev",
-        "https://hacktober-fest.onrender.com"
-    ]
+# CORS configuration: always include known production origins, plus anything in ALLOWED_ORIGINS env var
+PRODUCTION_ORIGINS = [
+    "https://trustflow-frontend.davishtalreja.workers.dev",
+    "https://hacktober-fest.onrender.com",
+]
+DEV_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
 
-# Strictly reject wildcard
-allowed_origins = [o for o in allowed_origins if o != "*"]
-if not allowed_origins:
-    allowed_origins = ["http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500"]
+raw_origins = os.getenv("ALLOWED_ORIGINS", "")
+env_origins = [o.strip() for o in raw_origins.split(",") if o.strip() and o.strip() != "*"] if raw_origins.strip() else []
+
+# Always merge: env var + production + dev (deduplicated, no wildcards)
+allowed_origins = list(dict.fromkeys(env_origins + PRODUCTION_ORIGINS + DEV_ORIGINS))
 
 app.add_middleware(
     CORSMiddleware,
